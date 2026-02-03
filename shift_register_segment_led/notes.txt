@@ -1,0 +1,40 @@
+unsigned char SegCode[16] is the hex to byte value to light each letter on segment led to represent the wanted symbol
+ex: 0x3f = 0x00111111 g will be 0(off) and all other letters 1(on)
+
+    
+#define   SDI   0(wiringpi equivalent pin from gpio)   // (DS) (connected to ds which is serial data pin from hc595)
+#define   RCLK  1   // (STCP)
+#define   SRCLK 2   // (SHCP)
+
+
+void hc595_shift(unsigned char dat){
+    int i;
+    for(i=0;i<8;i++){
+        digitalWrite(SDI, 0x80 & (dat << i)); //checks MSB bit7 (first bit)
+        digitalWrite(SRCLK, 1);
+        delay(1);
+        digitalWrite(SRCLK, 0);
+    }
+        digitalWrite(RCLK, 1);
+        delay(1);
+        digitalWrite(RCLK, 0);
+}
+
+SDI = shift bits into h2595 one at a time ("Serial" data input) (DP)
+SRCLK = shifts bits into shift memory register (pins Q0-Q7) (SHCP)
+RCLK = latches bits from shift memory register and outputs at once
+
+digitalWrite(SDI, 0x80 & (dat << i));
+// basicaly checks first digit of every value to see if its 0 or 1
+
+"&" only keeps matching 1's from 0x80 and compared number
+(0x80 = 1000 0000 0x5b = 11111100 = 1000 0000) 
+(0x80 = 1000 0000 0x3f = 00111111 = 0000 0000)
+
+"<<" shifts bits left by i amount
+so for every value it shifts bits 
+8 times and everytime a 1 is at the first bit
+its consiterd HIGH and 0 is LOW
+
+
+
